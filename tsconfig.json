@@ -1,0 +1,32 @@
+// filepath: /Users/johnkhalife/Code/shapesplosion/shapesplosion/tsconfig.json
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "./dist",
+    "rootDir": "./web",
+    "allowJs": true,
+    "checkJs": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "es2020",
+      "DOM"
+    ],
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "baseUrl": "."
+  },
+  "include": ["web/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    ".gadget"
+  ]
+}
