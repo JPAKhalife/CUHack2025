@@ -37,7 +37,7 @@ import { Application, Color, FillGradient, Text, TextStyle } from 'pixi.js';
     });
 
     const richText = new Text({
-        text: 'Rich text with a lot of options and across multiple lines',
+        text: 'ShapeSplosion',
         style,
     });
 
