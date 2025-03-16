@@ -1,1 +1,1 @@
-{"version":3,"sources":["/var/gadget/codegen/framework-1742072237330-9pNUmu/src/vite/types.ts"],"sourcesContent":["export type GadgetPluginOptions = Record<string, never>;\n"],"names":[],"mappings":"AAAA,WAAwD"}
+{"version":3,"sources":["/var/gadget/codegen/framework-1742071171791-7b2PiV/src/vite/types.ts"],"sourcesContent":["export type GadgetPluginOptions = Record<string, never>;\n"],"names":[],"mappings":"AAAA,WAAwD"}

@@ -35,8 +35,7 @@ import { Application, Color, FillGradient, Text, TextStyle } from 'pixi.js';
             angle: Math.PI / 6,
             distance: 6,
         },
-        wordWrap: true,
-        wordWrapWidth: 440,
+        wordWrap: false,
     });
 
     const title = new Text({
@@ -44,12 +43,10 @@ import { Application, Color, FillGradient, Text, TextStyle } from 'pixi.js';
         style,
     });
 
-    // Position the text in the center.
-    title.x = app.screen.width/2;
-    title.y = 10 + title.height;
-    title.anchor.set(0.5, 0.5);
+    title.x = 320;
+    title.y = 50;
+    title.anchor.set(0.5,0.5);
 
-    // Add the text to the stage.
     app.stage.addChild(title);
 
   

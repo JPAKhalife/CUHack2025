@@ -1,6 +1,6 @@
 {
   "name": "@gadget-client/shapesplosion",
-  "version": "1.2.0-avawiebe.3",
+  "version": "1.2.0-jpa-khalife-dev.3",
   "files": [
     "dist-*/",
     "types",
@@ -40,7 +40,7 @@
   },
   "gadget": {
     "applicationName": "shapesplosion",
-    "environmentName": "Avawiebe",
+    "environmentName": "Jpa-khalife-dev",
     "environmentVersion": "3"
   }
 }

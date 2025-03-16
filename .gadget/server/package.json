@@ -49,7 +49,7 @@
   ],
   "gadget": {
     "applicationName": "shapesplosion",
-    "environmentName": "Avawiebe",
+    "environmentName": "Jpa-khalife-dev",
     "environmentVersion": "3"
   },
   "main": "./dist-cjs/index.js",
@@ -86,5 +86,5 @@
       ]
     }
   },
-  "version": "1.2.0-avawiebe.3"
+  "version": "1.2.0-jpa-khalife-dev.3"
 }

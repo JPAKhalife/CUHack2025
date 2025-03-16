@@ -27,7 +27,7 @@ export const gadget = (options?: GadgetPluginOptions) => {
             assetsBucketDomain: "app-assets.gadget.dev",
             applicationId: "217028",
             productionEnvironmentId: "436384",
-            developmentEnvironmentVariables: {"GADGET_APP":"shapesplosion","GADGET_ENV":"avawiebe","GADGET_PUBLIC_APP_SLUG":"shapesplosion","GADGET_PUBLIC_APP_ENV":"avawiebe"},
+            developmentEnvironmentVariables: {"GADGET_APP":"shapesplosion","GADGET_ENV":"jpa-khalife-dev","GADGET_PUBLIC_APP_SLUG":"shapesplosion","GADGET_PUBLIC_APP_ENV":"jpa-khalife-dev"},
             productionEnvironmentVariables: {"GADGET_APP":"shapesplosion","GADGET_ENV":"production","GADGET_PUBLIC_APP_SLUG":"shapesplosion","GADGET_PUBLIC_APP_ENV":"production"},
           },
         });
@@ -62,7 +62,7 @@ export const gadget = (options?: GadgetPluginOptions) => {
       if (id.includes("vite/dist/client/client.mjs")) {
         if (opts.ssr) return;
         return {
-          code: patchOverlay(src, "avawiebe"),
+          code: patchOverlay(src, "jpa-khalife-dev"),
           };
         }
       
