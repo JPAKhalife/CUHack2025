@@ -1,31 +1,18 @@
 import type { OperationContext } from "@urql/core";
-import { GadgetConnection, GadgetTransaction, InternalModelManager, ActionFunctionMetadata, GlobalActionFunction, BackgroundActionHandle } from "@gadgetinc/api-client-core";
+import { GadgetConnection, GadgetTransaction, ActionFunctionMetadata, GlobalActionFunction, BackgroundActionHandle } from "@gadgetinc/api-client-core";
 import type { ClientOptions as ApiClientOptions, AnyClient, EnqueueBackgroundActionOptions, AnyActionFunction } from '@gadgetinc/api-client-core';
 import type { DocumentNode } from 'graphql';
-import { SessionManager } from "./models/Session.js";
-import { CurrentSessionManager } from "./models/CurrentSession.js";
-import { UserManager } from "./models/User.js";
-export { DefaultSessionSelection, type SessionRecord } from "./models/Session.js";
-export { DefaultUserSelection, type UserRecord } from "./models/User.js";
 type ClientOptions = Omit<ApiClientOptions, "environment"> & {
     environment?: string;
 };
 type AllOptionalVariables<T> = Partial<T> extends T ? object : never;
-export type InternalModelManagers = {
-    /** The internal API model manager for the session model */
-    session: InternalModelManager;
-    /** The internal API model manager for the user model */
-    user: InternalModelManager;
-};
+export type InternalModelManagers = {};
 /**
  * Root object used for interacting with the shapesplosion API. `Client` has `query` and `mutation` functions for executing raw GraphQL queries and mutations, as well as `ModelManager` objects for manipulating models with a JavaScript API. `Client` also has a `fetch` function for making raw requests to your backend.
  * */
 export declare class Client implements AnyClient {
     readonly options?: ClientOptions | undefined;
     connection: GadgetConnection;
-    session: SessionManager;
-    currentSession: CurrentSessionManager;
-    user: UserManager;
     /**
     * Namespaced object for accessing models via the Gadget internal APIs, which provide lower level and higher privileged operations directly against the database. Useful for maintenance operations like migrations or correcting broken data, and for implementing the high level actions.
     *
@@ -221,3 +208,4 @@ export declare class Client implements AnyClient {
     toString(): string;
     toJSON(): string;
 }
+export {};

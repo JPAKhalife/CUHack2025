@@ -18,8 +18,6 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var types_exports = {};
 __export(types_exports, {
-  BackgroundActionOutcome: () => BackgroundActionOutcome,
-  BackgroundActionPriority: () => BackgroundActionPriority,
   GadgetFieldType: () => GadgetFieldType
 });
 module.exports = __toCommonJS(types_exports);
@@ -54,21 +52,6 @@ var GadgetFieldType = /* @__PURE__ */ ((GadgetFieldType2) => {
   GadgetFieldType2[GadgetFieldType2["Vector"] = 27] = "Vector";
   return GadgetFieldType2;
 })(GadgetFieldType || {});
-var BackgroundActionPriority = /* @__PURE__ */ ((BackgroundActionPriority2) => {
-  BackgroundActionPriority2[BackgroundActionPriority2["DEFAULT"] = 0] = "DEFAULT";
-  BackgroundActionPriority2[BackgroundActionPriority2["HIGH"] = 1] = "HIGH";
-  BackgroundActionPriority2[BackgroundActionPriority2["LOW"] = 2] = "LOW";
-  BackgroundActionPriority2[BackgroundActionPriority2["PLATFORM"] = 3] = "PLATFORM";
-  return BackgroundActionPriority2;
-})(BackgroundActionPriority || {});
-var BackgroundActionOutcome = /* @__PURE__ */ ((BackgroundActionOutcome2) => {
-  BackgroundActionOutcome2[BackgroundActionOutcome2["failed"] = 0] = "failed";
-  BackgroundActionOutcome2[BackgroundActionOutcome2["completed"] = 1] = "completed";
-  return BackgroundActionOutcome2;
-})(BackgroundActionOutcome || {});
-;
-;
-;
 ;
 ;
 ;
@@ -89,8 +72,6 @@ var BackgroundActionOutcome = /* @__PURE__ */ ((BackgroundActionOutcome2) => {
 ;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  BackgroundActionOutcome,
-  BackgroundActionPriority,
   GadgetFieldType
 });
 //# sourceMappingURL=types.js.map

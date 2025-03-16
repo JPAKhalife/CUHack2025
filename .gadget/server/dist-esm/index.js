@@ -8,7 +8,7 @@
 *  |___/_| |_|\__,_| .__/ \___||___/ .__/|_|\___/|___/_|\___/|_| |_|
 *                  |_|             |_|                              
 *
-* Built for environment `Development` at version 3
+* Built for environment `Development` at version 439
 * Framework version: ^1.3.0
 * Edit this app here: https://shapesplosion.gadget.dev/edit
 */ /// <reference path="./ActionContextTypes.d.ts" />
@@ -33,8 +33,6 @@ export { preventCrossShopDataAccess, ShopifyBulkOperationState, ShopifySellingPl
 /**
  * @internal
  */ import { Globals, actionContextLocalStorage } from "./globals.js";
-export * from "./models/Session.js";
-export * from "./models/User.js";
 /**
 * A map of connection name to instantiated connection objects for the app.
 */ let connections;

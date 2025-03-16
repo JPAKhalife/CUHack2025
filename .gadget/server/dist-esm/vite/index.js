@@ -1,4 +1,5 @@
 import { getHtmlTags, getViteConfig } from "./helpers.js";
+import { patchOverlay } from "../core/errors/overlay.js";
 /**
  * Vite plugin that is used to configure the Vite build process for the Gadget application.
  */ export const gadget = (options)=>{
@@ -52,6 +53,12 @@ import { getHtmlTags, getViteConfig } from "./helpers.js";
             }
         },
         transform (src, id, opts) {
+            if (id.includes("vite/dist/client/client.mjs")) {
+                if (opts.ssr) return;
+                return {
+                    code: patchOverlay(src, "development")
+                };
+            }
             if (frontendType !== "vite" && command === "serve" && (id.endsWith("/web/root.tsx") || id.endsWith("/web/root.jsx"))) {
                 return {
                     code: src + `

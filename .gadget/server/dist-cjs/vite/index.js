@@ -9,6 +9,7 @@ Object.defineProperty(exports, "gadget", {
     }
 });
 const _helpers = require("./helpers");
+const _overlay = require("../core/errors/overlay");
 /**
  * Vite plugin that is used to configure the Vite build process for the Gadget application.
  */ const gadget = (options)=>{
@@ -62,6 +63,12 @@ const _helpers = require("./helpers");
             }
         },
         transform (src, id, opts) {
+            if (id.includes("vite/dist/client/client.mjs")) {
+                if (opts.ssr) return;
+                return {
+                    code: (0, _overlay.patchOverlay)(src, "development")
+                };
+            }
             if (frontendType !== "vite" && command === "serve" && (id.endsWith("/web/root.tsx") || id.endsWith("/web/root.jsx"))) {
                 return {
                     code: src + `

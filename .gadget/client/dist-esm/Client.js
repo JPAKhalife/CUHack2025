@@ -1,10 +1,5 @@
 import { pipe, map } from "wonka";
-import { assert, GadgetConnection, AuthenticationMode, InternalModelManager, enqueueActionRunner, BackgroundActionHandle } from "@gadgetinc/api-client-core";
-import { SessionManager } from "./models/Session.js";
-import { CurrentSessionManager } from "./models/CurrentSession.js";
-import { UserManager } from "./models/User.js";
-import { DefaultSessionSelection as DefaultSessionSelection2 } from "./models/Session.js";
-import { DefaultUserSelection as DefaultUserSelection2 } from "./models/User.js";
+import { assert, GadgetConnection, AuthenticationMode, enqueueActionRunner, BackgroundActionHandle } from "@gadgetinc/api-client-core";
 const productionEnv = "production";
 const fallbackEnv = "development";
 const getImplicitEnv = () => {
@@ -93,13 +88,7 @@ class Client {
     if (typeof window != "undefined" && this.connection.authenticationMode == AuthenticationMode.APIKey && !options?.authenticationMode?.dangerouslyAllowBrowserApiKey) {
       throw new Error("GGT_BROWSER_API_KEY_USAGE: Using a Gadget API key to authenticate this client object is insecure and will leak your API keys to attackers. Please use a different authentication mode.");
     }
-    this.session = new SessionManager(this.connection);
-    this.currentSession = new CurrentSessionManager(this.connection);
-    this.user = new UserManager(this.connection);
-    this.internal = {
-      session: new InternalModelManager("session", this.connection, { "pluralApiIdentifier": "sessions", "hasAmbiguousIdentifiers": false, "namespace": [] }),
-      user: new InternalModelManager("user", this.connection, { "pluralApiIdentifier": "users", "hasAmbiguousIdentifiers": false, "namespace": [] })
-    };
+    this.internal = {};
   }
   /**
    * Returns a new Client instance that will call the Gadget API as the application's admin user.
@@ -204,10 +193,8 @@ class Client {
     return this.toString();
   }
 }
-Client.prototype[Symbol.for("gadget/modelRelationships")] = { "session": { "user": { "type": "BelongsTo", "model": "user" } }, "user": {} };
+Client.prototype[Symbol.for("gadget/modelRelationships")] = {};
 export {
-  Client,
-  DefaultSessionSelection2 as DefaultSessionSelection,
-  DefaultUserSelection2 as DefaultUserSelection
+  Client
 };
 //# sourceMappingURL=Client.js.map

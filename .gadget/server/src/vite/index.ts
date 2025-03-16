@@ -59,6 +59,13 @@ export const gadget = (options?: GadgetPluginOptions) => {
     },
     transform(src: any, id: any, opts: any) {
       
+      if (id.includes("vite/dist/client/client.mjs")) {
+        if (opts.ssr) return;
+        return {
+          code: patchOverlay(src, "development"),
+          };
+        }
+      
 
       if(frontendType !== "vite" && command === "serve" && (id.endsWith("/web/root.tsx") || id.endsWith("/web/root.jsx"))) {
         return {

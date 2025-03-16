@@ -5,19 +5,13 @@ import { assert, GadgetConnection, AuthenticationMode, GadgetTransaction, Intern
 import type { ClientOptions as ApiClientOptions, AnyClient, EnqueueBackgroundActionOptions, AnyActionFunction } from '@gadgetinc/api-client-core';
 import type { DocumentNode } from 'graphql';
 
-import { DefaultSessionSelection, SessionManager } from "./models/Session.js";
-import { CurrentSessionManager } from "./models/CurrentSession.js";
-import { DefaultUserSelection, UserManager } from "./models/User.js";
-export { DefaultSessionSelection, type SessionRecord } from "./models/Session.js";
-export { DefaultUserSelection, type UserRecord } from "./models/User.js";
+
+
 
 type ClientOptions = Omit<ApiClientOptions, "environment"> & { environment?: string };
 type AllOptionalVariables<T> = Partial<T> extends T ? object : never;
 export type InternalModelManagers = {
-   /** The internal API model manager for the session model */
-   session: InternalModelManager;
-   /** The internal API model manager for the user model */
-   user: InternalModelManager;
+
  };
 
 const productionEnv = "production";
@@ -43,9 +37,7 @@ const getImplicitEnv = () => {
 export class Client implements AnyClient {
   connection!: GadgetConnection;
 
-  session!: SessionManager;
-  currentSession!: CurrentSessionManager;
-  user!: UserManager;
+
 
   /**
   * Namespaced object for accessing models via the Gadget internal APIs, which provide lower level and higher privileged operations directly against the database. Useful for maintenance operations like migrations or correcting broken data, and for implementing the high level actions.
@@ -146,13 +138,10 @@ export class Client implements AnyClient {
 
 
 
-    this.session = new SessionManager(this.connection);
-    this.currentSession = new CurrentSessionManager(this.connection);
-    this.user = new UserManager(this.connection);
+
 
     this.internal = {
-                      session: new InternalModelManager("session", this.connection, {"pluralApiIdentifier":"sessions","hasAmbiguousIdentifiers":false,"namespace":[]}),
-                      user: new InternalModelManager("user", this.connection, {"pluralApiIdentifier":"users","hasAmbiguousIdentifiers":false,"namespace":[]}),
+                    
                     };
   }
 
@@ -411,4 +400,4 @@ export class Client implements AnyClient {
   }
 }
 
-(Client.prototype as any)[Symbol.for("gadget/modelRelationships")] = {"session":{"user":{"type":"BelongsTo","model":"user"}},"user":{}};
+(Client.prototype as any)[Symbol.for("gadget/modelRelationships")] = {};
