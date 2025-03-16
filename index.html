@@ -8,6 +8,17 @@
     <body>
       <div id="game">
         <script type="module" src="./web/Game/game.ts"></script>
+        <!-- <script type="module" src="./web/Game/gemini.ts"></script> -->
+        <button id="insultButton">Insult Me</button>
+        <div id="insultText"></div>
+        <script type="module">
+          import { insult } from '/web/Game/gemini.ts';
+
+          document.getElementById('insultButton').addEventListener('click', async function() {
+            const insultResult = await insult();
+            document.getElementById('insultText').textContent = insultResult;
+          });
+        </script>
       </div>
     </body>
   </html>
