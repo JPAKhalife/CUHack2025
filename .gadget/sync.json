@@ -1,0 +1,15 @@
+{
+  "application": "shapesplosion",
+  "environment": "avawiebe",
+  "environments": {
+    "development": {
+      "filesVersion": "319"
+    },
+    "jpa-khalife-dev": {
+      "filesVersion": "0"
+    },
+    "avawiebe": {
+      "filesVersion": "0"
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "@gadget-client/shapesplosion",
+  "version": "1.2.0-development.3",
+  "files": [
+    "dist-*/",
+    "types",
+    "types-esm",
+    "bin/"
+  ],
+  "source": "src/index.ts",
+  "types": "types/index.d.ts",
+  "main": "dist-cjs/index.js",
+  "module": "dist-esm/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./types-esm/index.d.ts",
+        "default": "./dist-esm/index.js"
+      },
+      "require": {
+        "types": "./types/index.d.ts",
+        "default": "./dist-cjs/index.js"
+      }
+    }
+  },
+  "private": true,
+  "dependencies": {
+    "@gadgetinc/api-client-core": "0.15.41",
+    "tiny-graphql-query-compiler": "^0.2.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "@types/node": "^20.17.7",
+    "@urql/core": "^4.0.10",
+    "graphql": "^16.8.1",
+    "wonka": "^6.3.2"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "gadget": {
+    "applicationName": "shapesplosion",
+    "environmentName": "Development",
+    "environmentVersion": "3"
+  }
+}

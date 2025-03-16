@@ -1,0 +1,1 @@
+{"version":3,"sources":["/var/gadget/codegen/framework-1742065326854-RUN6wP/src/vite/types.ts"],"sourcesContent":["export type GadgetPluginOptions = Record<string, never>;\n"],"names":[],"mappings":"AAAA,WAAwD"}
