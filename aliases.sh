@@ -1,0 +1,1 @@
+alias start='./start.sh'

@@ -18,11 +18,18 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var Client_exports = {};
 __export(Client_exports, {
-  Client: () => Client
+  Client: () => Client,
+  DefaultSessionSelection: () => import_Session2.DefaultSessionSelection,
+  DefaultUserSelection: () => import_User2.DefaultUserSelection
 });
 module.exports = __toCommonJS(Client_exports);
 var import_wonka = require("wonka");
 var import_api_client_core = require("@gadgetinc/api-client-core");
+var import_Session = require("./models/Session.js");
+var import_CurrentSession = require("./models/CurrentSession.js");
+var import_User = require("./models/User.js");
+var import_Session2 = require("./models/Session.js");
+var import_User2 = require("./models/User.js");
 const import_meta = {};
 const productionEnv = "production";
 const fallbackEnv = "development";
@@ -113,7 +120,13 @@ class Client {
     if (typeof window != "undefined" && this.connection.authenticationMode == import_api_client_core.AuthenticationMode.APIKey && !((_b = options == null ? void 0 : options.authenticationMode) == null ? void 0 : _b.dangerouslyAllowBrowserApiKey)) {
       throw new Error("GGT_BROWSER_API_KEY_USAGE: Using a Gadget API key to authenticate this client object is insecure and will leak your API keys to attackers. Please use a different authentication mode.");
     }
-    this.internal = {};
+    this.session = new import_Session.SessionManager(this.connection);
+    this.currentSession = new import_CurrentSession.CurrentSessionManager(this.connection);
+    this.user = new import_User.UserManager(this.connection);
+    this.internal = {
+      session: new import_api_client_core.InternalModelManager("session", this.connection, { "pluralApiIdentifier": "sessions", "hasAmbiguousIdentifiers": false, "namespace": [] }),
+      user: new import_api_client_core.InternalModelManager("user", this.connection, { "pluralApiIdentifier": "users", "hasAmbiguousIdentifiers": false, "namespace": [] })
+    };
   }
   /**
    * Returns a new Client instance that will call the Gadget API as the application's admin user.
@@ -220,9 +233,11 @@ class Client {
     return this.toString();
   }
 }
-Client.prototype[Symbol.for("gadget/modelRelationships")] = {};
+Client.prototype[Symbol.for("gadget/modelRelationships")] = { "session": { "user": { "type": "BelongsTo", "model": "user" } }, "user": {} };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  Client
+  Client,
+  DefaultSessionSelection,
+  DefaultUserSelection
 });
 //# sourceMappingURL=Client.js.map

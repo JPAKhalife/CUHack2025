@@ -1,6 +1,6 @@
 {
   "name": "@gadget-client/shapesplosion",
-  "version": "1.2.0-development.439",
+  "version": "1.2.0-avawiebe.3",
   "files": [
     "dist-*/",
     "types",
@@ -40,7 +40,7 @@
   },
   "gadget": {
     "applicationName": "shapesplosion",
-    "environmentName": "Development",
-    "environmentVersion": "439"
+    "environmentName": "Avawiebe",
+    "environmentVersion": "3"
   }
 }

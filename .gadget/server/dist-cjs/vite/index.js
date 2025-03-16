@@ -31,9 +31,9 @@ const _overlay = require("../core/errors/overlay");
                     productionEnvironmentId: "436384",
                     developmentEnvironmentVariables: {
                         "GADGET_APP": "shapesplosion",
-                        "GADGET_ENV": "development",
+                        "GADGET_ENV": "avawiebe",
                         "GADGET_PUBLIC_APP_SLUG": "shapesplosion",
-                        "GADGET_PUBLIC_APP_ENV": "development"
+                        "GADGET_PUBLIC_APP_ENV": "avawiebe"
                     },
                     productionEnvironmentVariables: {
                         "GADGET_APP": "shapesplosion",
@@ -66,7 +66,7 @@ const _overlay = require("../core/errors/overlay");
             if (id.includes("vite/dist/client/client.mjs")) {
                 if (opts.ssr) return;
                 return {
-                    code: (0, _overlay.patchOverlay)(src, "development")
+                    code: (0, _overlay.patchOverlay)(src, "avawiebe")
                 };
             }
             if (frontendType !== "vite" && command === "serve" && (id.endsWith("/web/root.tsx") || id.endsWith("/web/root.jsx"))) {

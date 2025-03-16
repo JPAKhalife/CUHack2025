@@ -27,7 +27,7 @@ _export(exports, {
 *  |___/_| |_|\__,_| .__/ \___||___/ .__/|_|\___/|___/_|\___/|_| |_|
 *                  |_|             |_|                              
 *
-* Built for environment `Development` at version 439
+* Built for environment `Avawiebe` at version 3
 * Framework version: ^1.3.0
 * Edit this app here: https://shapesplosion.gadget.dev/edit
 */ /// <reference path="./ActionContextTypes.d.ts" />
@@ -110,6 +110,8 @@ const _index1 = require("./shopify/index");
 const _globals = require(/**
  * @internal
  */ "./globals");
+_export_star(require("./models/Session"), exports);
+_export_star(require("./models/User"), exports);
 function _export_star(from, to) {
     Object.keys(from).forEach(function(k) {
         if (k !== "default" && !Object.prototype.hasOwnProperty.call(to, k)) {

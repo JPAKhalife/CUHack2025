@@ -1,0 +1,1 @@
+npx ggt@latest dev ./shapesplosion --app=shapesplosion

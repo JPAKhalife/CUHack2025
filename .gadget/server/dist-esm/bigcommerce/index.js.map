@@ -1,1 +1,1 @@
-{"version":3,"sources":["/var/gadget/codegen/framework-1742091933726-6MDDXl/src/bigcommerce/index.ts"],"sourcesContent":["export * from \"./effects.js\";\n"],"names":[],"mappings":"AAAA,cAAc,eAAe"}
+{"version":3,"sources":["/var/gadget/codegen/framework-1742072237330-9pNUmu/src/bigcommerce/index.ts"],"sourcesContent":["export * from \"./effects.js\";\n"],"names":[],"mappings":"AAAA,cAAc,eAAe"}

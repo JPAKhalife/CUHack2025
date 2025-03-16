@@ -29,6 +29,21 @@ var GadgetFieldType = /* @__PURE__ */ ((GadgetFieldType2) => {
   GadgetFieldType2[GadgetFieldType2["Vector"] = 27] = "Vector";
   return GadgetFieldType2;
 })(GadgetFieldType || {});
+var BackgroundActionPriority = /* @__PURE__ */ ((BackgroundActionPriority2) => {
+  BackgroundActionPriority2[BackgroundActionPriority2["DEFAULT"] = 0] = "DEFAULT";
+  BackgroundActionPriority2[BackgroundActionPriority2["HIGH"] = 1] = "HIGH";
+  BackgroundActionPriority2[BackgroundActionPriority2["LOW"] = 2] = "LOW";
+  BackgroundActionPriority2[BackgroundActionPriority2["PLATFORM"] = 3] = "PLATFORM";
+  return BackgroundActionPriority2;
+})(BackgroundActionPriority || {});
+var BackgroundActionOutcome = /* @__PURE__ */ ((BackgroundActionOutcome2) => {
+  BackgroundActionOutcome2[BackgroundActionOutcome2["failed"] = 0] = "failed";
+  BackgroundActionOutcome2[BackgroundActionOutcome2["completed"] = 1] = "completed";
+  return BackgroundActionOutcome2;
+})(BackgroundActionOutcome || {});
+;
+;
+;
 ;
 ;
 ;
@@ -48,6 +63,8 @@ var GadgetFieldType = /* @__PURE__ */ ((GadgetFieldType2) => {
 ;
 ;
 export {
+  BackgroundActionOutcome,
+  BackgroundActionPriority,
   GadgetFieldType
 };
 //# sourceMappingURL=types.js.map
