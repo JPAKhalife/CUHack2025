@@ -1,6 +1,6 @@
 {
   "application": "shapesplosion",
-  "environment": "avawiebe",
+  "environment": "development",
   "environments": {
     "development": {
       "filesVersion": "319"
