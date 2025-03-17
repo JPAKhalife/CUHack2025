@@ -336,6 +336,7 @@
         padding: 15px;
         margin-right: 10px;
         max-width: 350px;
+        width: 20%;
         min-height: 50px;
         box-shadow: 0 6px 12px rgba(0,0,0,0.4);
         transition: all 0.4s ease-out;
@@ -441,12 +442,8 @@
     <div class="shapes-background" id="shapes-background"></div>
     <button id="fancy-insult-button" class="fancy-button hidden">Insult Shapey</button>
     <button id="insult-me-button" class="fancy-button hidden">Insult Me</button>
-    
-    <div id="game">
-      <script type="module" src="./web/Game/game.ts"></script>
-      <div id="insultText"></div>
-      
-      <div id="game-instructions">
+
+    <div id="game-instructions">
         <h2>How to Play</h2>
         <div class="instructions-content">
           <div class="instruction-section">
@@ -470,6 +467,37 @@
         </div>
       </div>
     </div>
+    
+    <div id="game">
+      <canvas id="gameCanvas" width="800" height="600"></canvas>
+      <script type="module">
+        import { initializeGame } from '/web/Game/index.ts';
+        
+        // Initialize the game when the window loads
+        window.addEventListener('load', () => {
+          const canvas = document.getElementById('gameCanvas');
+          if (canvas) {
+            const game = initializeGame(canvas, {
+              width: 800,
+              height: 600,
+              gravity: { x: 0, y: 0.2 },
+              maxShapes: 20,
+              spawnRate: 1000,
+              difficulty: 'medium',
+              soundEnabled: true,
+              backgroundMusic: false,
+              particleEffects: true
+            });
+            
+            console.log('Game initialized successfully');
+          } else {
+            console.error('Game canvas not found');
+          }
+        });
+      </script>
+      <div id="insultText"></div>
+      
+      
     
     <div id="shapey-container">
       <div id="speech-bubble" class="hidden">
@@ -900,7 +928,7 @@
             });
           }
         });
-        
+        //!Shapeydelay
         setTimeout(() => {
           // 5-second delay before Shapey slides onto the screen
           // First slide Shapey in
@@ -918,7 +946,7 @@
               false // Don't show the insult me button after initial dialogue
             );
           });
-        }, 5000); // 5-second delay
+        }, 10000); // 5-second delay
         
         // Initialize variables for storing AI session
         let aiSessionId = null;
