@@ -16,6 +16,14 @@ export const permissions: GadgetPermissions = {
         action: true,
       },
       models: {
+        AISession: {
+          read: true,
+          actions: {
+            create: true,
+            delete: true,
+            update: true,
+          },
+        },
         user: {
           read: {
             filter: "accessControl/filters/user/tenant.gelly",
@@ -34,6 +42,12 @@ export const permissions: GadgetPermissions = {
     unauthenticated: {
       storageKey: "unauthenticated",
       models: {
+        AISession: {
+          read: true,
+          actions: {
+            create: true,
+          },
+        },
         user: {
           actions: {
             resetPassword: true,

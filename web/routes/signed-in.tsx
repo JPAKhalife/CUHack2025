@@ -1,6 +1,7 @@
 import { useUser, useSignOut } from "@gadgetinc/react";
 import { api } from "../api";
 import { Link } from "react-router";
+import { InsultGenerator } from "../components/InsultGenerator";
 
 export const SignedInPage = () => {
   const user = useUser(api);
@@ -44,6 +45,11 @@ export const SignedInPage = () => {
             Sign Out
           </a>
         </div>
+      </div>
+      
+      <div className="card-stack">
+        <h2>Insult Generator</h2>
+        <InsultGenerator />
       </div>
     </>
   ) : null;

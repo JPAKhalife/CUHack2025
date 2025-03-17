@@ -1,25 +1,403 @@
 <!DOCTYPE html>
 <html lang="en">
-  <html>
-    <head>
-      <title>ShapeSplosion</title>
-      <script src="https://pixijs.download/release/pixi.js"></script>
-    </head>
-    <body>
-      <div id="game">
-        <script type="module" src="./web/Game/game.ts"></script>
-        <!-- <script type="module" src="./web/Game/gemini.ts"></script> -->
-        <button id="insultButton">Insult Me</button>
-        <div id="insultText"></div>
-        <script type="module">
-          import { insult } from '/web/Game/gemini.ts';
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShapeSplosion</title>
+    <link rel="icon" href="/public/favicon.png">
+    <style>
+      #fancy-insult-button {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: linear-gradient(45deg, #ff5252, #ff1744);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-family: 'Arial', sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        transform: scale(0);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 1000;
+      }
+      
+      #fancy-insult-button:hover {
+        background: linear-gradient(45deg, #ff1744, #d50000);
+        transform: scale(1.05) translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      }
+      
+      #fancy-insult-button:active {
+        transform: scale(0.95) translateY(1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      }
+      
+      #fancy-insult-button.show {
+        animation: button-pop 0.5s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      
+      @keyframes button-pop {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        70% {
+          transform: scale(1.1);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
 
-          document.getElementById('insultButton').addEventListener('click', async function() {
-            const insultResult = await insult();
-            document.getElementById('insultText').textContent = insultResult;
-          });
-        </script>
+      #shapey-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        align-items: flex-end;
+        z-index: 1000;
+      }
+      
+      #shapey-character {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+        animation: bobbing 2s ease-in-out infinite;
+        image-rendering: -webkit-optimize-contrast; /* For webkit (Chrome, Safari) */
+        image-rendering: crisp-edges; /* For Firefox */
+        image-rendering: pixelated; /* For other browsers */
+      }
+      
+      #shapey-character.offscreen {
+        transform: translateX(120px);
+        animation: none;
+      }
+      
+      #shapey-character.sliding-in {
+        animation: slide-in 1s forwards;
+      }
+      
+      @keyframes slide-in {
+        from { transform: translateX(120px); }
+        to { transform: translateX(0); }
+      }
+      
+      @keyframes bobbing {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+      
+      #shapey-character.rolling {
+        animation: roll 2s infinite linear;
+      }
+      
+      @keyframes roll {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      
+      #speech-bubble {
+        position: relative;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 15px;
+        margin-right: 10px;
+        max-width: 350px;
+        min-height: 50px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: all 0.4s ease-out;
+        transform-origin: bottom right;
+        opacity: 1;
+      }
+      
+      #speech-bubble.hidden {
+        transform: scale(0.1);
+        opacity: 0;
+        max-width: 50px;
+        max-height: 50px;
+      }
+      
+      #speech-bubble.animating {
+        animation: bubble-pop 0.4s ease-out forwards;
+        opacity: 0;
+      }
+      
+      @keyframes bubble-pop {
+        0% {
+          transform: scale(0.1);
+          opacity: 0;
+        }
+        25% {
+          transform: scale(0.6);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      
+      #speech-bubble:after {
+        content: '';
+        position: absolute;
+        right: 0px;
+        bottom: 45px;
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+        border-left-color: #ffffff;
+        border-right: 0;
+        margin-top: -10px;
+        margin-right: -10px;
+      }
+      
+      #speech-text {
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        min-height: 1em;
+        white-space: pre-line;
+        line-height: 1.4;
+      }
+      
+      .hidden {
+        display: none !important;
+      }
+      
+      .paragraph-break {
+        display: block;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="fancy-insult-button" class="hidden">Insult Shapey</button>
+    
+    <div id="game">
+      <script type="module" src="./web/Game/game.ts"></script>
+      <div id="insultText"></div>
+    </div>
+    
+    <div id="shapey-container">
+      <div id="speech-bubble" class="hidden">
+        <div id="speech-text"></div>
       </div>
-    </body>
-  </html>
+      <img id="shapey-character" src="/public/ShapeyHappy.png" alt="Shapey" class="happy">
+    </div>
+
+    <script>
+      // Calculate speech bubble size accurately by measuring the text dimensions
+      function calculateTextDimensions(text) {
+        // Create a hidden element to measure text dimensions
+        const measurer = document.createElement('div');
+        measurer.id = 'text-measure';
+        measurer.style.position = 'absolute';
+        measurer.style.visibility = 'hidden';
+        measurer.style.maxWidth = '400px'; // Match the largest possible width
+        measurer.style.fontFamily = 'Arial, sans-serif';
+        measurer.style.fontSize = '16px';
+        measurer.style.lineHeight = '1.4';
+        measurer.style.whiteSpace = 'pre-line';
+        measurer.style.padding = '15px'; // Match the padding of speech bubble
+        measurer.innerHTML = formatText(text);
+        
+        // Add to DOM to measure
+        document.body.appendChild(measurer);
+        
+        // Get dimensions
+        const width = Math.min(400, measurer.scrollWidth + 30); // Add some padding
+        const height = measurer.scrollHeight + 30; // Add some padding
+        
+        // Clean up
+        document.body.removeChild(measurer);
+        
+        return { 
+          width: width + 'px',
+          height: height + 'px'
+        };
+      }
+      
+      // Format text with proper paragraph breaks
+      function formatText(text) {
+        // Replace double line breaks with special marker
+        return text.replace(/\n\s*\n/g, '<span class="paragraph-break"></span>')
+                   .replace(/\n/g, ' ');
+      }
+      
+      // Typewriter animation function
+      function typeWriter(element, text, speed = 50, callback) {
+        let formattedText = formatText(text);
+        let i = 0;
+        let htmlMode = false;
+        let htmlBuffer = '';
+        element.innerHTML = '';
+        
+        function type() {
+          if (i < formattedText.length) {
+            let char = formattedText.charAt(i);
+            
+            // Handle HTML tags for paragraph breaks
+            if (char === '<') {
+              htmlMode = true;
+              htmlBuffer = '<';
+            } else if (htmlMode) {
+              htmlBuffer += char;
+              if (char === '>') {
+                element.innerHTML += htmlBuffer;
+                htmlMode = false;
+                htmlBuffer = '';
+              }
+            } else {
+              element.innerHTML += char;
+            }
+            
+            i++;
+            setTimeout(type, speed);
+          } else if (callback) {
+            setTimeout(callback, 1000);
+          }
+        }
+        
+        type();
+      }
+      
+      // Shapey character functions
+      function setShapeyMood(mood) {
+        const shapey = document.getElementById('shapey-character');
+        // Set image source based on mood
+        if (mood === 'happy') {
+          shapey.src = '/public/ShapeyHappy.png';
+        } else if (mood === 'angry') {
+          shapey.src = '/public/ShapeyAngry.png';
+        } else if (mood === 'rolling') {
+          shapey.src = '/public/ShapeyRolling.png';
+        }
+        
+        // Preserve sliding-in class if it's present
+        if (shapey.classList.contains('sliding-in')) {
+          shapey.className = ''; // Clear all classes first
+          shapey.classList.add(mood);
+          shapey.classList.add('sliding-in');
+        } else {
+          shapey.className = mood; // mood can be 'happy', 'angry', or 'rolling'
+        }
+      }
+      
+      // Show speech bubble
+      function showSpeechBubble(text, mood = 'happy', callback, showInsultButton = false) {
+        const speechText = document.getElementById('speech-text');
+        const speechBubble = document.getElementById('speech-bubble');
+        
+        // Clear any existing text
+        speechText.innerHTML = '';
+        
+        // Calculate accurate dimensions for the speech bubble
+        const textDimensions = calculateTextDimensions(text);
+        
+        // Apply dimensions to the speech bubble before animation starts
+        speechBubble.style.width = textDimensions.width;
+        speechBubble.style.minHeight = textDimensions.height;
+        
+        // Show and animate the bubble
+        speechBubble.classList.remove('hidden');
+        speechBubble.classList.add('animating');
+        
+        // Set character mood
+        setShapeyMood(mood);
+        
+        // Small delay to ensure animation starts properly
+        setTimeout(() => {
+          // Remove animating class after animation completes
+          speechBubble.addEventListener('animationend', function() {
+            speechBubble.classList.remove('animating');
+          }, {once: true});
+          
+          typeWriter(speechText, text, 50, () => {
+            // Show insult button if requested
+            if (showInsultButton) {
+              const insultButton = document.getElementById('fancy-insult-button');
+              insultButton.classList.remove('hidden');
+              insultButton.classList.add('show');
+            }
+            
+            if (callback) {
+              callback();
+            }
+            // No longer hiding automatically
+          });
+        }, 400); // Wait for bubble animation to complete
+      }
+      
+      // Hide speech bubble with animation
+      function hideSpeechBubble() {
+        const speechBubble = document.getElementById('speech-bubble');
+        speechBubble.classList.add('hidden');
+      }
+      
+      // Function to slide Shapey in from off-screen
+      function slideShapeyIn(callback) {
+        const shapey = document.getElementById('shapey-character');
+        shapey.classList.add('offscreen'); // Start offscreen
+        
+        // Force reflow to ensure the offscreen class is applied
+        void shapey.offsetWidth;
+        
+        // Start slide-in animation
+        shapey.classList.add('sliding-in');
+        shapey.classList.remove('offscreen');
+        
+        // Call callback when animation ends
+        shapey.addEventListener('animationend', function(e) {
+          if (e.animationName === 'slide-in') {
+            shapey.classList.remove('sliding-in');
+            // Start bobbing animation after slide-in completes
+            if (callback) callback();
+          }
+        }, {once: true});
+      }
+      
+      // Example usage - show greeting when page loads
+      document.addEventListener('DOMContentLoaded', () => {
+        // Start with Shapey off-screen
+        const shapey = document.getElementById('shapey-character');
+        shapey.classList.add('offscreen');
+        
+        // Ensure speech bubble is hidden initially
+        const speechBubble = document.getElementById('speech-bubble');
+        speechBubble.classList.add('hidden');
+        
+        // Ensure insult button is hidden initially
+        const fancyInsultButton = document.getElementById('fancy-insult-button');
+        fancyInsultButton.classList.add('hidden');
+        
+        setTimeout(() => {
+          // First slide Shapey in
+          slideShapeyIn(() => {
+            // Only show speech bubble after Shapey has slid in
+            showSpeechBubble(
+              "Hey there! I'm Shapey, and it looks like YOU'RE trying to play my game. It's pretty hard, so I wouldn't count on getting very far.\n\nActually, it's powered by Angle Intelligence, my own personal creation.\n\nEr, I mean, it was trained on data that basically belongs to me, anyways....\n\nWhat does it do? I have a feeling that you'll find out soon, if you're anything like most of the players who pass through these parts.", 
+              'happy', 
+              null, 
+              true // Show the insult button after dialogue completes
+            );
+          });
+        }, 500);
+        
+        // Connect to fancy insult button
+        fancyInsultButton.addEventListener('click', () => {
+          showSpeechBubble("That's not very nice! But I'll forgive you this time.", 'angry');
+        });
+      });
+    </script>
+  </body>
 </html>
