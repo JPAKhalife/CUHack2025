@@ -11,8 +11,10 @@
     "@gadget-client/shapesplosion": "link:.gadget/client",
     "@gadgetinc/react": "^0.19.1",
     "@google/generative-ai": "^0.24.0",
+    "@types/matter-js": "^0.19.8",
     "axios": "^1.8.3",
     "gadget-server": "link:.gadget/server",
+    "matter-js": "^0.20.0",
     "pixi.js": "^8.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -25,6 +27,7 @@
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react-swc": "3.2.0",
     "typescript": "^5.7.2",
-    "vite": "^5.3.5"
+    "vite": "^5.3.5",
+    "@types/matter-js": "^0.19.8"
   }
 }
