@@ -6,9 +6,47 @@
     <title>ShapeSplosion</title>
     <link rel="icon" href="/public/favicon.png">
     <style>
-      #fancy-insult-button {
+      /* Animated ellipsis styles */
+      .loading-dots {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 24px;
+      }
+      
+      .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin: 0 3px;
+        border-radius: 50%;
+        background-color: #333;
+        animation: dot-bounce 1.4s infinite ease-in-out;
+      }
+      
+      .dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+      
+      .dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      
+      .dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      
+      @keyframes dot-bounce {
+        0%, 80%, 100% { 
+          transform: translateY(0);
+        }
+        40% { 
+          transform: translateY(-10px);
+        }
+      }
+      
+      .fancy-button {
         position: fixed;
-        top: 20px;
         left: 20px;
         background: linear-gradient(45deg, #ff5252, #ff1744);
         color: white;
@@ -25,19 +63,36 @@
         z-index: 1000;
       }
       
-      #fancy-insult-button:hover {
-        background: linear-gradient(45deg, #ff1744, #d50000);
+      .fancy-button:hover {
         transform: scale(1.05) translateY(-2px);
         box-shadow: 0 6px 12px rgba(0,0,0,0.3);
       }
       
-      #fancy-insult-button:active {
+      .fancy-button:active {
         transform: scale(0.95) translateY(1px);
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
       }
       
-      #fancy-insult-button.show {
+      .fancy-button.show {
         animation: button-pop 0.5s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      
+      #fancy-insult-button {
+        top: 20px;
+        background: linear-gradient(45deg, #ff5252, #ff1744);
+      }
+      
+      #fancy-insult-button:hover {
+        background: linear-gradient(45deg, #ff1744, #d50000);
+      }
+      
+      #insult-me-button {
+        top: 80px;
+        background: linear-gradient(45deg, #4a148c, #7b1fa2);
+      }
+      
+      #insult-me-button:hover {
+        background: linear-gradient(45deg, #7b1fa2, #4a148c);
       }
       
       @keyframes button-pop {
@@ -95,7 +150,7 @@
       }
       
       #shapey-character.rolling {
-        animation: roll 2s infinite linear;
+        animation: roll 2s linear forwards;
       }
       
       @keyframes roll {
@@ -178,10 +233,41 @@
         display: block;
         margin-top: 10px;
       }
+      
+      /* Pulse animation for click feedback */
+      @keyframes pulse-feedback {
+        0% { 
+          transform: scale(1);
+          opacity: 1; 
+        }
+        50% { 
+          transform: scale(1.05); 
+          opacity: 0.9;
+        }
+        100% { 
+          transform: scale(1);
+          opacity: 1; 
+        }
+      }
+      
+      .pulse {
+        animation: pulse-feedback 0.3s ease-in-out;
+      }
+      
+      /* Speech bubble jump animation */
+      @keyframes bubble-jump {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+      }
+      
+      #speech-bubble.jumping {
+        animation: bubble-jump 0.5s ease-in-out;
+      }
     </style>
   </head>
   <body>
-    <button id="fancy-insult-button" class="hidden">Insult Shapey</button>
+    <button id="fancy-insult-button" class="fancy-button hidden">Insult Shapey</button>
+    <button id="insult-me-button" class="fancy-button hidden">Insult Me</button>
     
     <div id="game">
       <script type="module" src="./web/Game/game.ts"></script>
@@ -191,6 +277,11 @@
     <div id="shapey-container">
       <div id="speech-bubble" class="hidden">
         <div id="speech-text"></div>
+        <div id="loading-dots" class="loading-dots hidden">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
       </div>
       <img id="shapey-character" src="/public/ShapeyHappy.png" alt="Shapey" class="happy">
     </div>
@@ -234,12 +325,81 @@
                    .replace(/\n/g, ' ');
       }
       
+      // Variables to track the current typewriter state
+      let currentTypewriterTimer = null;
+      let currentTypewriterCallback = null;
+      let currentTypewriterText = '';
+      let currentTypewriterElement = null;
+      let isTypewriterActive = false;
+      let insultMeButtonShown = false; // Track if the insult me button has been shown
+      let isInitialDialogue = false; // Track if current dialogue is the initial one
+      let initialDialogueCompleted = false; // Track if initial dialogue has completed
+      let shouldShowInsultButton = false; // Track if insult button should be shown
+      let shouldShowInsultMeButton = false; // Track if insult me button should be shown
+
+      // Function to skip the current typewriter animation
+      function skipTypewriter() {
+        // Only proceed if there's an active typewriter animation
+        if (isTypewriterActive && currentTypewriterElement) {
+          // Clear any existing timeouts
+          if (currentTypewriterTimer) {
+            clearTimeout(currentTypewriterTimer);
+            currentTypewriterTimer = null;
+          }
+          
+          // Complete the text immediately
+          currentTypewriterElement.innerHTML = formatText(currentTypewriterText);
+          
+          // Reset the isTypewriterActive flag
+          isTypewriterActive = false;
+          
+          // Show insult button if requested, including for initial dialogue
+          if (shouldShowInsultButton || isInitialDialogue) {
+            const insultButton = document.getElementById('fancy-insult-button');
+            insultButton.classList.remove('hidden');
+            insultButton.classList.add('show');
+          }
+          
+          // Show insult me button only if explicitly requested, not for initial dialogue
+          if (shouldShowInsultMeButton) {
+            const insultMeButton = document.getElementById('insult-me-button');
+            insultMeButton.classList.remove('hidden');
+            insultMeButton.classList.add('show');
+            insultMeButtonShown = true;
+          }
+          
+          // Execute any pending callback after a short delay
+          if (currentTypewriterCallback) {
+            setTimeout(currentTypewriterCallback, 100);
+            currentTypewriterCallback = null;
+          }
+          
+          return true; // Animation was skipped
+        }
+        
+        return false; // No animation was skipped
+      }
+
       // Typewriter animation function
-      function typeWriter(element, text, speed = 50, callback) {
+      function typeWriter(element, text, speed = 30, callback) {
+        // Store the current typewriter state globally
+        currentTypewriterElement = element;
+        currentTypewriterText = text;
+        currentTypewriterCallback = callback;
+        isTypewriterActive = true;
+        
+        // Clear any existing typewriter animations
+        if (currentTypewriterTimer) {
+          clearTimeout(currentTypewriterTimer);
+          currentTypewriterTimer = null;
+        }
+
         let formattedText = formatText(text);
         let i = 0;
         let htmlMode = false;
         let htmlBuffer = '';
+        
+        // Clear the element completely before starting
         element.innerHTML = '';
         
         function type() {
@@ -262,9 +422,15 @@
             }
             
             i++;
-            setTimeout(type, speed);
-          } else if (callback) {
-            setTimeout(callback, 1000);
+            currentTypewriterTimer = setTimeout(type, speed);
+          } else {
+            currentTypewriterTimer = null;
+            isTypewriterActive = false;
+            
+            if (callback) {
+              currentTypewriterCallback = null; // Clear the callback reference
+              setTimeout(callback, 1000);
+            }
           }
         }
         
@@ -281,6 +447,8 @@
           shapey.src = '/public/ShapeyAngry.png';
         } else if (mood === 'rolling') {
           shapey.src = '/public/ShapeyRolling.png';
+        } else if (mood == 'unhappy') {
+          shapey.src = '/public/ShapeyRolling.png';
         }
         
         // Preserve sliding-in class if it's present
@@ -293,12 +461,22 @@
         }
       }
       
+      // Flag to track if speech bubble animation is in progress
+      let speechAnimationInProgress = false;
+
       // Show speech bubble
-      function showSpeechBubble(text, mood = 'happy', callback, showInsultButton = false) {
+      function showSpeechBubble(text, mood = 'happy', callback, showInsultButton = false, showInsultMeButton = false) {
         const speechText = document.getElementById('speech-text');
         const speechBubble = document.getElementById('speech-bubble');
         
-        // Clear any existing text
+        // Update flags for tracking insult button and initial dialogue
+        shouldShowInsultButton = showInsultButton;
+        shouldShowInsultMeButton = showInsultMeButton;
+        
+        // Cancel any ongoing animations by removing classes
+        speechBubble.classList.remove('animating');
+        
+        // Clear existing text completely
         speechText.innerHTML = '';
         
         // Calculate accurate dimensions for the speech bubble
@@ -308,21 +486,31 @@
         speechBubble.style.width = textDimensions.width;
         speechBubble.style.minHeight = textDimensions.height;
         
-        // Show and animate the bubble
+        // If the bubble is hidden, we need to show and animate it
+        const wasHidden = speechBubble.classList.contains('hidden');
+        
+        // Remove hidden class and add animating class
         speechBubble.classList.remove('hidden');
-        speechBubble.classList.add('animating');
+        
+        // Only add animation if it was previously hidden
+        if (wasHidden) {
+          // Force reflow to ensure CSS changes are applied before animation
+          void speechBubble.offsetWidth;
+          speechBubble.classList.add('animating');
+        }
         
         // Set character mood
         setShapeyMood(mood);
         
-        // Small delay to ensure animation starts properly
-        setTimeout(() => {
-          // Remove animating class after animation completes
-          speechBubble.addEventListener('animationend', function() {
-            speechBubble.classList.remove('animating');
-          }, {once: true});
+        // Mark animation as in progress
+        speechAnimationInProgress = true;
+        
+        const startTypewriter = () => {
+          // Mark animation as complete
+          speechAnimationInProgress = false;
           
-          typeWriter(speechText, text, 50, () => {
+          // Start the typewriter effect
+          typeWriter(speechText, text, 30, () => {
             // Show insult button if requested
             if (showInsultButton) {
               const insultButton = document.getElementById('fancy-insult-button');
@@ -330,17 +518,56 @@
               insultButton.classList.add('show');
             }
             
+            // Show insult me button only if explicitly requested
+            if (showInsultMeButton) {
+              const insultMeButton = document.getElementById('insult-me-button');
+              insultMeButton.classList.remove('hidden');
+              insultMeButton.classList.add('show');
+              insultMeButtonShown = true;
+            }
+            
             if (callback) {
               callback();
             }
-            // No longer hiding automatically
           });
-        }, 400); // Wait for bubble animation to complete
+        };
+        
+        if (wasHidden) {
+          // If bubble was hidden, wait for animation to complete
+          speechBubble.addEventListener('animationend', function handleAnimEnd() {
+            speechBubble.removeEventListener('animationend', handleAnimEnd);
+            speechBubble.classList.remove('animating');
+            startTypewriter();
+          }, {once: true});
+          
+          // Safety timeout in case animation event doesn't fire
+          setTimeout(() => {
+            if (speechAnimationInProgress) {
+              speechBubble.classList.remove('animating');
+              startTypewriter();
+            }
+          }, 600);
+        } else {
+          // If already visible, start typewriter immediately
+          startTypewriter();
+        }
       }
       
       // Hide speech bubble with animation
       function hideSpeechBubble() {
         const speechBubble = document.getElementById('speech-bubble');
+        const speechText = document.getElementById('speech-text');
+        
+        // Cancel any ongoing typewriter animations
+        if (currentTypewriterTimer) {
+          clearTimeout(currentTypewriterTimer);
+          currentTypewriterTimer = null;
+        }
+        
+        // Clear the text immediately
+        speechText.innerHTML = '';
+        
+        // Hide the bubble
         speechBubble.classList.add('hidden');
       }
       
@@ -380,23 +607,275 @@
         const fancyInsultButton = document.getElementById('fancy-insult-button');
         fancyInsultButton.classList.add('hidden');
         
+        // Add click event listeners for skipping dialogue
+        shapey.addEventListener('click', () => {
+          const speechBubble = document.getElementById('speech-bubble');
+          
+          // Make speech bubble jump when Shapey is clicked
+          if (!speechBubble.classList.contains('hidden')) {
+            // Add jumping class to speech bubble
+            speechBubble.classList.add('jumping');
+            
+            // Remove jumping class when animation completes
+            speechBubble.addEventListener('animationend', function onAnimEnd(e) {
+              if (e.animationName === 'bubble-jump') {
+                speechBubble.classList.remove('jumping');
+                speechBubble.removeEventListener('animationend', onAnimEnd);
+              }
+            });
+          }
+          
+          if (skipTypewriter()) {
+            // Add pulse animation to provide visual feedback
+            shapey.classList.add('pulse');
+            // Remove the class after animation completes
+            setTimeout(() => {
+              shapey.classList.remove('pulse');
+            }, 300);
+          }
+        });
+        
+        speechBubble.addEventListener('click', () => {
+          if (skipTypewriter()) {
+            // Add pulse animation to provide visual feedback
+            speechBubble.classList.add('pulse');
+            // Remove the class after animation completes
+            setTimeout(() => {
+              speechBubble.classList.remove('pulse');
+            }, 300);
+            
+            // Also trigger the jumping animation
+            speechBubble.classList.add('jumping');
+            
+            // Remove jumping class when animation completes
+            speechBubble.addEventListener('animationend', function onAnimEnd(e) {
+              if (e.animationName === 'bubble-jump') {
+                speechBubble.classList.remove('jumping');
+                speechBubble.removeEventListener('animationend', onAnimEnd);
+              }
+            });
+          }
+        });
+        
         setTimeout(() => {
           // First slide Shapey in
           slideShapeyIn(() => {
             // Only show speech bubble after Shapey has slid in
+            isInitialDialogue = true; // Mark this as the initial dialogue
             showSpeechBubble(
               "Hey there! I'm Shapey, and it looks like YOU'RE trying to play my game. It's pretty hard, so I wouldn't count on getting very far.\n\nActually, it's powered by Angle Intelligence, my own personal creation.\n\nEr, I mean, it was trained on data that basically belongs to me, anyways....\n\nWhat does it do? I have a feeling that you'll find out soon, if you're anything like most of the players who pass through these parts.", 
               'happy', 
-              null, 
-              true // Show the insult button after dialogue completes
+              () => {
+                isInitialDialogue = false; // Reset after dialogue completes
+                initialDialogueCompleted = true; // Mark that initial dialogue has completed
+              }, 
+              true, // Show the insult button after dialogue completes
+              false // Don't show the insult me button after initial dialogue
             );
           });
         }, 500);
         
+        // Initialize variables for storing AI session
+        let aiSessionId = null;
+        let clientId = null;
+        
+        // Initialize AI session when page loads
+        function initializeAISession() {
+          fetch('/init-session')
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Failed to initialize AI session: ${response.status}`);
+              }
+              return response.json();
+            })
+            .then(data => {
+              aiSessionId = data.sessionId;
+              clientId = data.clientId;
+              console.log('AI session initialized with ID:', aiSessionId);
+            })
+            .catch(error => {
+              console.error('Error initializing AI session:', error);
+            });
+        }
+        
+        // Call init session when page loads
+        initializeAISession();
+        
+        // Function to show animated loading dots
+        function showLoadingDots() {
+          const speechText = document.getElementById('speech-text');
+          const loadingDots = document.getElementById('loading-dots');
+          
+          // Cancel any ongoing typewriter animations
+          if (currentTypewriterTimer) {
+            clearTimeout(currentTypewriterTimer);
+            currentTypewriterTimer = null;
+          }
+          
+          // Reset typewriter state
+          currentTypewriterElement = null;
+          currentTypewriterText = '';
+          currentTypewriterCallback = null;
+          isTypewriterActive = false;
+          
+          // Clear speech text and show loading dots
+          speechText.innerHTML = '';
+          loadingDots.classList.remove('hidden');
+        }
+        
+        // Function to hide loading dots
+        function hideLoadingDots() {
+          const loadingDots = document.getElementById('loading-dots');
+          loadingDots.classList.add('hidden');
+        }
+        
+        // Function to fetch and display an insult
+        function fetchInsult() {
+          // First check if we need to cancel any ongoing typewriter animation
+          if (isTypewriterActive) {
+            // Stop any ongoing typewriter animation
+            if (currentTypewriterTimer) {
+              clearTimeout(currentTypewriterTimer);
+              currentTypewriterTimer = null;
+            }
+            
+            // Reset the typewriter state
+            isTypewriterActive = false;
+            currentTypewriterCallback = null;
+            
+            // If there's an element being used for typewriter, clear it
+            if (currentTypewriterElement) {
+              currentTypewriterElement.innerHTML = '';
+              currentTypewriterElement = null;
+            }
+            
+            currentTypewriterText = '';
+          }
+          
+          if (!aiSessionId) {
+            showSpeechBubble("Sorry, I'm not ready yet. Try again in a moment.", 'angry');
+            // Retry initializing session
+            initializeAISession();
+            return;
+          }
+          
+          // Show loading state with Shapey rolling and animated dots
+          setShapeyMood('rolling');
+          
+          // Show speech bubble with empty text first
+          const speechBubble = document.getElementById('speech-bubble');
+          speechBubble.classList.remove('hidden');
+          
+          // Display the animated dots
+          showLoadingDots();
+          
+          // Fetch the insult as text, not JSON
+          fetch(`/insult?sessionId=${aiSessionId}&clientId=${clientId}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Failed to fetch insult: ${response.status} ${response.statusText}`);
+              }
+              // Return as text since endpoint returns plain text
+              return response.text();
+            })
+            .then(insultText => {
+              // Hide the loading dots
+              hideLoadingDots();
+              
+              if (insultText && insultText.trim()) {
+                // Show the insult text with rolling mood briefly
+                showSpeechBubble(insultText, 'rolling');
+                
+                // After a moment, change to angry mood
+                setTimeout(() => {
+                  setShapeyMood('angry');
+                }, 1000);
+              } else {
+                throw new Error('Empty insult response received');
+              }
+            })
+            .catch(error => {
+              // Hide the loading dots
+              hideLoadingDots();
+              
+              console.error('Error fetching insult:', error);
+              let errorMessage = "I seem to be having trouble coming up with a good insult right now. Try again later.";
+              
+              // More specific error messages based on the error type
+              if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                errorMessage = "Network error! Are you still connected to the internet? Try again when you're back online.";
+              } else if (error.message.includes('404')) {
+                errorMessage = "Hmm, it looks like the insult generator isn't available right now. The developers might be updating it.";
+              }
+              
+              showSpeechBubble(errorMessage, 'angry');
+              setShapeyMood('angry');
+            });
+        }
+        
+        // Track how many times the insult button is clicked
+        let insultShapeyClickCount = 0;
+      
         // Connect to fancy insult button
         fancyInsultButton.addEventListener('click', () => {
-          showSpeechBubble("That's not very nice! But I'll forgive you this time.", 'angry');
+          // Track insult button clicks for dialogue purposes
+          insultShapeyClickCount++;
+        
+          if (insultShapeyClickCount === 1) {
+            // First click - happy and friendly but cautionary
+            showSpeechBubble("Hey now, that's not very nice! I'm just trying to help you enjoy the game. Let's keep things friendly, okay?", 'happy');
+          } else if (insultShapeyClickCount === 2) {
+            // Second click - rolling face with a warning but no animation
+            const shapey = document.getElementById('shapey-character');
+            
+            // Directly set the image source without adding the rolling class
+            shapey.src = '/public/ShapeyRolling.png';
+            
+            // Preserve sliding-in class if it's present, but don't add rolling class
+            if (shapey.classList.contains('sliding-in')) {
+              shapey.className = 'sliding-in';
+            } else {
+              shapey.className = '';  // Remove any existing classes
+            }
+            
+            // Show the warning message
+            showSpeechBubble("Stop insulting me. I'm not joking around.", 'unhappy');
+          } else if (insultShapeyClickCount === 3 || insultShapeyClickCount >= 4) {
+            if (insultShapeyClickCount === 3) {
+              // Show special message on third click and show button after dialogue completes
+              showSpeechBubble(
+                "Okay, FINE! You really want to play the insult game? Let's see how YOU like it! I've unlocked a special button just for you.", 
+                'angry',
+                () => {
+                  // Only show the "Insult Me" button after dialogue completes and if initial dialogue is done
+                  if (initialDialogueCompleted && !insultMeButtonShown) {
+                    const insultMeButton = document.getElementById('insult-me-button');
+                    insultMeButton.classList.remove('hidden');
+                    insultMeButton.classList.add('show');
+                    insultMeButtonShown = true;
+                  }
+                }
+              );
+            } else {
+              // Any additional clicks after the 3rd
+              showSpeechBubble("Go ahead, use that other button. See what happens!", 'angry');
+              
+              // For fourth click or later, immediately show the insult me button if it's not already shown
+              if (!insultMeButtonShown) {
+                const insultMeButton = document.getElementById('insult-me-button');
+                insultMeButton.classList.remove('hidden');
+                insultMeButton.classList.add('show');
+                insultMeButtonShown = true;
+              }
+            }
+          }
         });
+      
+        // Connect to insult me button
+        const insultMeButton = document.getElementById('insult-me-button');
+        insultMeButton.addEventListener('click', fetchInsult);
+      
+        // The "Insult Me" button will only appear after 3 clicks on the "Insult Shapey" button
       });
     </script>
   </body>

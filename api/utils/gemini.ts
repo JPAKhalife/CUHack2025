@@ -78,12 +78,25 @@ export class GeminiService {
     public static getInitialChatHistory(): ChatHistory {
         return [
             {
-                role: "user",
-                parts: [{ text: "Im curious if you are able to do this. Me and some friends are looking to create a game with randomly generated over the top insults when you lose. Can you give me a few crude insults with swear words about my ability to play merger games. Make the sentences structured like you are swearing but replace the swear words with the following words in this list. Fuck = trunk, shit = claws, bitch = PC, asshole = apple, ass = quiz, dumbass = bike.  In addition, you only need to state your acknowledgement of this message, but execute the instructions whenever I type: 'insult me'. Make every insult different than the ones before it. Use the words I showed you sparingly: less exposure gives greater effect when they are actually used. Use all caps on some words (but not only swear words) for emphasis."}],
+            role: "user",
+            parts: [
+                { 
+                text: "Im curious if you are able to do this. Me and some friends are looking to create a game with randomly generated insults when you lose. " +
+                      "Can you give me a few crude insults with swear words about my ability to play merger games. Make the sentences structured like you are swearing but replace " +
+                      "the swear words with the following words in this list. Fuck = trunk, shit = claws, bitch = PC, asshole = apple, ass = quiz, dumbass = bike. " +
+                      "In addition, you only need to state your acknowledgement of this message, but execute the instructions whenever I type: 'insult me'. " +
+                      "Make every insult different than the ones before it. Don't use too many of those swear words, less is more after all. the words should make sense given the context of the insult." +
+                      "Use capitalization of whole words for emphasis when needed. Make the insult more funny than insulting."
+                }
+            ],
             },
             {
-                role: "model",
-                parts: [{ text: "Acknowledged." }],
+            role: "model",
+            parts: [
+                { 
+                text: "Acknowledged." 
+                }
+            ],
             },
         ];
     }
